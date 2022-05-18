@@ -17,6 +17,9 @@
     "doctrine/common": {
         "version": "3.3.0"
     },
+    "doctrine/data-fixtures": {
+        "version": "1.5.3"
+    },
     "doctrine/dbal": {
         "version": "3.3.6"
     },
@@ -35,6 +38,18 @@
             "./config/packages/doctrine.yaml",
             "./src/Entity/.gitignore",
             "./src/Repository/.gitignore"
+        ]
+    },
+    "doctrine/doctrine-fixtures-bundle": {
+        "version": "3.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "3.0",
+            "ref": "1f5514cfa15b947298df4d771e694e578d4c204d"
+        },
+        "files": [
+            "./src/DataFixtures/AppFixtures.php"
         ]
     },
     "doctrine/doctrine-migrations-bundle": {
@@ -77,17 +92,41 @@
     "egulias/email-validator": {
         "version": "3.1.2"
     },
+    "fakerphp/faker": {
+        "version": "v1.19.0"
+    },
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.12"
     },
     "laminas/laminas-code": {
         "version": "4.5.1"
     },
+    "lcobucci/clock": {
+        "version": "2.2.0"
+    },
+    "lcobucci/jwt": {
+        "version": "4.0.4"
+    },
+    "lexik/jwt-authentication-bundle": {
+        "version": "2.15",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "2.5",
+            "ref": "5b2157bcd5778166a5696e42f552ad36529a07a6"
+        },
+        "files": [
+            "./config/packages/lexik_jwt_authentication.yaml"
+        ]
+    },
     "monolog/monolog": {
         "version": "2.6.0"
     },
     "myclabs/deep-copy": {
         "version": "1.11.0"
+    },
+    "namshi/jose": {
+        "version": "7.2.3"
     },
     "nikic/php-parser": {
         "version": "v4.13.2"
@@ -216,6 +255,9 @@
         "files": [
             "./config/packages/sensio_framework_extra.yaml"
         ]
+    },
+    "stella-maris/clock": {
+        "version": "0.1.4"
     },
     "symfony/asset": {
         "version": "v6.0.7"
@@ -428,7 +470,13 @@
     "symfony/polyfill-mbstring": {
         "version": "v1.25.0"
     },
+    "symfony/polyfill-php56": {
+        "version": "v1.20.0"
+    },
     "symfony/polyfill-php81": {
+        "version": "v1.25.0"
+    },
+    "symfony/polyfill-uuid": {
         "version": "v1.25.0"
     },
     "symfony/process": {
@@ -524,6 +572,9 @@
             "./templates/base.html.twig"
         ]
     },
+    "symfony/uid": {
+        "version": "v6.0.3"
+    },
     "symfony/validator": {
         "version": "6.0",
         "recipe": {
@@ -572,5 +623,23 @@
     },
     "webmozart/assert": {
         "version": "1.10.0"
+    },
+    "zenstruck/assert": {
+        "version": "v1.0.1"
+    },
+    "zenstruck/callback": {
+        "version": "v1.4.2"
+    },
+    "zenstruck/foundry": {
+        "version": "1.18",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "1.10",
+            "ref": "37c2f894cc098ab4c08874b80cccc8e2f8de7976"
+        },
+        "files": [
+            "./config/packages/zenstruck_foundry.yaml"
+        ]
     }
 }
