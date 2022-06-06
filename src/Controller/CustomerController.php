@@ -21,6 +21,6 @@ class CustomerController extends AbstractController
     #[Route('/api/customers/{uuid}', name: 'customer_details', methods: ['GET'])]
     public function productDetails(Customer $customer): Response
     {
-        return $this->json($customer, 201, context: ['groups' => 'customer:details']);
+        return $this->json($customer, 201, context: ['groups' => 'customer:read']);
     }
 }

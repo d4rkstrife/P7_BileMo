@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\ResellerRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use App\Repository\ResellerRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: ResellerRepository::class)]
 class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
@@ -27,6 +28,7 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     private $password;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
+    #[Groups('customer:read')]
     private $company;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
@@ -67,7 +69,7 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->uuid;
+        return (string) $this->email;
     }
 
     /**

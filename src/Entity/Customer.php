@@ -23,11 +23,12 @@ class Customer
     private $lastName;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups('customer:details')]
+    #[Groups('customer:read')]
     private $adress;
 
     #[ORM\ManyToOne(targetEntity: Reseller::class, inversedBy: 'customers')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups('customer:read')]
     private $reseller;
 
     #[ORM\Column(type: 'uuid')]
@@ -35,11 +36,11 @@ class Customer
     private $uuid;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
-    #[Groups('customer:details')]
+    #[Groups('customer:read')]
     private $email;
 
     #[ORM\Column(type: 'datetime')]
-    #[Groups('customer:details')]
+    #[Groups('customer:read')]
     private $createdAt;
 
 
