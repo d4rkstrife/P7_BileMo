@@ -22,12 +22,12 @@ class ProductController extends AbstractController
     {
         $phones = $this->phoneRepo->findAll();
 
-        return $this->json($phones, 201);
+        return $this->json($phones, 201, context: ['groups' => 'product:read']);
     }
 
     #[Route('/api/products/{uuid}', name: 'product_details', methods: ['GET'])]
     public function productDetails(Phone $phone): Response
     {
-        return $this->json($phone, 201);
+        return $this->json($phone, 201, context: ['groups' => 'product:read']);
     }
 }

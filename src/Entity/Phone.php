@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\PhoneRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PhoneRepository::class)]
 class Phone
@@ -16,18 +17,23 @@ class Phone
     private $id;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
+    #[Groups('product:read')]
     private $name;
 
     #[ORM\Column(type: 'integer')]
+    #[Groups('product:read')]
     private $price;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups('product:read')]
     private $brand;
 
     #[ORM\Column(type: 'text')]
+    #[Groups('product:read')]
     private $description;
 
     #[ORM\Column(type: 'uuid')]
+    #[Groups('product:read')]
     private $uuid;
 
     public function __construct()
