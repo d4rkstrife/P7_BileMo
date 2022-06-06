@@ -7,8 +7,10 @@ use App\Repository\ResellerRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Ignore;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ResellerRepository::class)]
 class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
@@ -16,12 +18,14 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Ignore()]
     private $id;
 
     #[ORM\Column(type: 'string')]
     private $uuid;
 
     #[ORM\Column(type: 'json')]
+    #[Ignore()]
     private $roles = [];
 
     #[ORM\Column(type: 'string')]
@@ -32,6 +36,7 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     private $company;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
+    #[Assert\Email()]
     private $email;
 
     #[ORM\Column(type: 'datetime')]
