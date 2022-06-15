@@ -45,6 +45,7 @@ final class PhoneFactory extends ModelFactory
             'brand' => self::faker()->word(),
             'description' => self::faker()->sentence($nbWords = 30, $variableNbWords = true),
             'uuid' => Uuid::v4(), // TODO add UUID ORM type manually
+            'createdAt' => self::faker()->dateTime(),
         ];
     }
 
