@@ -38,6 +38,9 @@ class Phone
     //[Groups('product:read')]
     private $uuid;
 
+    #[ORM\Column(type: 'datetime')]
+    private $createdAt;
+
     public function __construct()
     {
         $this->phonePictures = new ArrayCollection();
@@ -104,6 +107,18 @@ class Phone
     public function setUuid($uuid): self
     {
         $this->uuid = $uuid;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

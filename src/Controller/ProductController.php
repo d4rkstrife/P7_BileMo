@@ -3,13 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Phone;
+use App\Service\Paginator;
 use Symfony\Component\Uid\Uuid;
 use App\Repository\PhoneRepository;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class ProductController extends AbstractController
 {
@@ -19,10 +20,10 @@ class ProductController extends AbstractController
     }
 
     #[Route('api/products', name: 'app_product', methods: ['GET'])]
-    public function allProducts(Request $request): Response
+    public function allProducts(RequestStack $request, Paginator $paginator): Response
     {
-        // dd($request->get('page', 1));
-        $phones = $this->phoneRepo->findAll();
+        //dd($paginator->requestPage());
+        $phones = $this->phoneRepo->findBy([], ['createdAt' => "desc"], $paginator->numberOfItems('app.itemperpage'), $paginator->actualPageItems('app.itemperpage'));
 
         return $this->json($phones, 201);
     }
