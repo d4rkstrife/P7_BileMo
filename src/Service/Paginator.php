@@ -2,30 +2,29 @@
 
 namespace App\Service;
 
+use App\Entity\Phone;
 use App\Repository\PhoneRepository;
+use App\Repository\CustomerRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class Paginator
 {
-    private RequestStack $request;
-    private ParameterBagInterface $params;
+    private mixed $datas;
 
-    public function __construct(RequestStack $request, ParameterBagInterface $params, PhoneRepository $phoneRepo)
+    public function __construct(private EntityManagerInterface $entityManager, private RequestStack $request, private ParameterBagInterface $params)
     {
-        $this->phoneRepo = $phoneRepo;
-        $this->params = $params;
-        $this->request = $request;
     }
 
-    public function requestPage(string $type): int
+    public function requestPage(string $type, array $criteria = [], mixed $repository): int
     {
         $requestPage = $this->request->getCurrentRequest()->get('page', 1);
         if ($requestPage < 1) {
             $requestPage = 1;
-        } else if ($requestPage > $this->maxPage($type)) {
-            $requestPage = $this->maxPage($type);
+        } else if ($requestPage > $this->maxPage($type, $criteria, $repository)) {
+            $requestPage = $this->maxPage($type, $criteria, $repository);
         }
         return $requestPage;
     }
@@ -35,15 +34,27 @@ class Paginator
         return $this->params->get($type);
     }
 
-    public function actualPageItems(string $type): int
+    public function actualPageItems(string $type, array $criteria = [], mixed $repository): int
     {
-        $actualPage = $this->requestPage($type) - 1;
+        $actualPage = $this->requestPage($type, $criteria, $repository) - 1;
         return $actualPage * $this->params->get($type);
     }
 
-    public function maxPage(string $type): int
+    public function maxPage(string $type, array $criteria = [], mixed $repository): int
     {
-        $numberOfItems = $this->phoneRepo->count([]);
-        return $numberOfItems / $this->params->get($type);
+        $numberOfItems = $repository->count($criteria);
+
+        return ceil($numberOfItems / $this->params->get($type));
+    }
+
+    public function createPagination(string $repositoryName, array $criteria, array $orderBy, string $type)
+    {
+        $repository = $this->entityManager->getRepository($repositoryName);
+        $this->datas = $repository->findBy($criteria, $orderBy, $this->numberOfItems($type), $this->actualPageItems($type, $criteria, $repository));
+    }
+
+    public function getDatas(): mixed
+    {
+        return $this->datas;
     }
 }

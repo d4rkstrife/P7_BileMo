@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CustomerRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\Ignore;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
@@ -18,6 +19,7 @@ class Customer
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('customer:read')]
+
     private $firstName;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -39,6 +41,8 @@ class Customer
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
     #[Groups('customer:read')]
+    #[Assert\Email()]
+    #[Assert\Unique()]
     private $email;
 
     #[ORM\Column(type: 'datetime')]
