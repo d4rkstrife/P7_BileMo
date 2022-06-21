@@ -35,12 +35,12 @@ class SignUpController extends AbstractController
                 $violations[] = $violation->getMessage();
             }
             //à faire
-            return $this->json('problème');
+            return $this->json($violations);
         }
         $reseller->setPassword($this->userPasswordHasher->hashPassword($reseller, $reseller->getPassword()));
 
         $resellerRepo->add($reseller);
 
-        return $this->json($reseller, 201);
+        return $this->json($reseller, 201, context: ['groups' => 'reseller:read']);
     }
 }

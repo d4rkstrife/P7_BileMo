@@ -47,7 +47,7 @@ class Paginator
         return ceil($numberOfItems / $this->params->get($type));
     }
 
-    public function createPagination(string $repositoryName, array $criteria, array $orderBy, string $type)
+    public function createPagination(string $repositoryName, array $criteria, array $orderBy, string $type): void
     {
         $repository = $this->entityManager->getRepository($repositoryName);
         $this->datas = $repository->findBy($criteria, $orderBy, $this->numberOfItems($type), $this->actualPageItems($type, $criteria, $repository));

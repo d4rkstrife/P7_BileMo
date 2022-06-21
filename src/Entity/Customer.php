@@ -6,6 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CustomerRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\Ignore;
+use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
@@ -19,15 +21,20 @@ class Customer
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('customer:read')]
-
+    #[NotBlank()]
+    #[NotNull()]
     private $firstName;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('customer:read')]
+    #[NotBlank()]
+    #[NotNull()]
     private $lastName;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('customer:read')]
+    #[NotBlank()]
+    #[NotNull()]
     private $adress;
 
     #[ORM\ManyToOne(targetEntity: Reseller::class, inversedBy: 'customers')]
@@ -43,6 +50,8 @@ class Customer
     #[Groups('customer:read')]
     #[Assert\Email()]
     #[Assert\Unique()]
+    #[NotBlank()]
+    #[NotNull()]
     private $email;
 
     #[ORM\Column(type: 'datetime')]

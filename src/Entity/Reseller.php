@@ -12,6 +12,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 #[ORM\Entity(repositoryClass: ResellerRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'mailUnique')]
@@ -24,6 +26,7 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     private $id;
 
     #[ORM\Column(type: 'string')]
+    #[Groups('reseller:read')]
     private $uuid;
 
     #[ORM\Column(type: 'json')]
@@ -31,17 +34,26 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     private $roles = [];
 
     #[ORM\Column(type: 'string')]
+    #[Assert\Regex('^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$^', message: 'passwordIncorrect')]
+    #[NotBlank(message: 'passwordNotNull')]
+    #[NotNull(message: 'passwordNotNull')]
     private $password;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('customer:read')]
+    #[NotBlank(message: 'companyNotNull')]
+    #[NotNull(message: 'companyNotNull')]
     private $company;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
-    #[Assert\Email()]
+    #[Groups('reseller:read')]
+    #[Assert\Email(message: 'mailNotValid')]
+    #[NotBlank(message: 'mailNotNull')]
+    #[NotNull(message: 'mailNotNull')]
     private $email;
 
     #[ORM\Column(type: 'datetime')]
+    #[Groups('reseller:read')]
     private $createdAt;
 
     #[ORM\OneToMany(mappedBy: 'Reseller', targetEntity: Customer::class, orphanRemoval: true)]
