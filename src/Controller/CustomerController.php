@@ -32,7 +32,14 @@ class CustomerController extends AbstractController
         $customer->setUuid(Uuid::v4());
         $customer->setReseller($this->getUser());
         $exceptions = $validator->validate($customer);
-        dd($exceptions);
+
+        if (count($exceptions) !== 0) {
+            $violations = [];
+            foreach ($exceptions as $violation) {
+                $violations[] = $violation->getMessage();
+            }
+            return $this->json($violations);
+        }
         $customerRepo->add($customer);
 
         return $this->json('ok');
