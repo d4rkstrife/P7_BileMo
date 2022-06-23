@@ -2,48 +2,57 @@
 
 namespace App\Service;
 
+use App\Entity\Phone;
 use App\Repository\PhoneRepository;
+use App\Repository\CustomerRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class Paginator
 {
-    private RequestStack $request;
-    private ParameterBagInterface $params;
+    private mixed $datas;
+    private int $numberOfItems = 0;
+    private int $maxPage = 0;
 
-    public function __construct(RequestStack $request, ParameterBagInterface $params, PhoneRepository $phoneRepo)
+    public function __construct(private EntityManagerInterface $entityManager, private RequestStack $request, private ParameterBagInterface $params)
     {
-        $this->phoneRepo = $phoneRepo;
-        $this->params = $params;
-        $this->request = $request;
     }
 
-    public function requestPage(string $type): int
+    public function requestPage(): int
     {
         $requestPage = $this->request->getCurrentRequest()->get('page', 1);
         if ($requestPage < 1) {
             $requestPage = 1;
-        } else if ($requestPage > $this->maxPage($type)) {
-            $requestPage = $this->maxPage($type);
+        } else if ($requestPage > $this->maxPage) {
+            $requestPage = $this->maxPage;
         }
-        return $requestPage;
+        return $requestPage - 1;
     }
 
-    public function numberOfItems(string $type): int
+    public function getNumberOfItems(): int
     {
-        return $this->params->get($type);
+        return $this->numberOfItems;
     }
 
-    public function actualPageItems(string $type): int
+    public function getMaxPage(): int
     {
-        $actualPage = $this->requestPage($type) - 1;
-        return $actualPage * $this->params->get($type);
+        return $this->maxPage;
     }
 
-    public function maxPage(string $type): int
+    public function createPagination(string $repositoryName, array $criteria, array $orderBy, string $type): void
     {
-        $numberOfItems = $this->phoneRepo->count([]);
-        return $numberOfItems / $this->params->get($type);
+        $this->numberOfItems = $this->params->get($type);
+        $repository = $this->entityManager->getRepository($repositoryName);
+        $maxOfItems = $repository->count($criteria);
+        $this->maxPage = ceil($maxOfItems / $this->numberOfItems);
+        $actualPage = $this->requestPage();
+        $this->datas = $repository->findBy($criteria, $orderBy, $this->numberOfItems, $actualPage * $this->numberOfItems);
+    }
+
+    public function getDatas(): mixed
+    {
+        return $this->datas;
     }
 }

@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 class ProductController extends AbstractController
 {
@@ -20,12 +19,10 @@ class ProductController extends AbstractController
     }
 
     #[Route('api/products', name: 'app_product', methods: ['GET'])]
-    public function allProducts(RequestStack $request, Paginator $paginator): Response
+    public function allProducts(Paginator $paginator): Response
     {
-        //dd($paginator->requestPage());
-        $phones = $this->phoneRepo->findBy([], ['createdAt' => "desc"], $paginator->numberOfItems('app.itemperpage'), $paginator->actualPageItems('app.itemperpage'));
-
-        return $this->json($phones, 201);
+        $paginator->createPagination(Phone::class, [], ['createdAt' => "desc"], 'app.phoneperpage');
+        return $this->json($paginator->getDatas(), 201);
     }
 
     #[Route('/api/products/{uuid}', name: 'product_details', methods: ['GET'])]

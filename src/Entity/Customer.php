@@ -6,8 +6,13 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CustomerRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\Ignore;
+use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
+#[UniqueEntity(fields: ['email'], message: 'mailUnique')]
 class Customer
 {
     #[ORM\Id]
@@ -18,14 +23,20 @@ class Customer
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('customer:read')]
+    #[NotBlank(message: 'firstNameNotNull')]
+    #[NotNull(message: 'firstNameNotNull')]
     private $firstName;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('customer:read')]
+    #[NotBlank(message: 'lastNameNotNull')]
+    #[NotNull(message: 'lastNameNotNull')]
     private $lastName;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('customer:read')]
+    #[NotBlank()]
+    #[NotNull()]
     private $adress;
 
     #[ORM\ManyToOne(targetEntity: Reseller::class, inversedBy: 'customers')]
@@ -39,6 +50,9 @@ class Customer
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
     #[Groups('customer:read')]
+    #[Assert\Email(message: 'mailNotValid')]
+    #[NotBlank(message: 'mailNotNull')]
+    #[NotNull(message: 'mailNotNull')]
     private $email;
 
     #[ORM\Column(type: 'datetime')]

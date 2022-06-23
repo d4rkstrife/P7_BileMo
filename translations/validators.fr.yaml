@@ -1,0 +1,7 @@
+mailUnique : "Cette adresse mail est déjà utilisée."
+mailNotNull: "Le champ email ne peut pas être nul."
+mailNotValid: "Cette adresse mail n'est pas valide."
+passwordIncorrect: "Le mot de passe doit contenir au moins 8 caractères dont une majuscule, une minuscule et un chiffre."
+companyNotNull: "Le champ company ne peut pas être nul."
+firstNameNotNull: "Le champ firstName ne doit pas être nul."
+lastNameNotNull: "Le champ lastName ne doit pas être nul."
