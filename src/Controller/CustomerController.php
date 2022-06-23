@@ -27,7 +27,21 @@ class CustomerController extends AbstractController
     #[Route('/api/customers/', name: 'addCustomer', methods: ['POST'])]
     public function addOne(CustomerRepository $customerRepo, Request $request, SerializerInterface $serializer, ValidatorInterface $validator): Response
     {
+        //tester request getcontent
         $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json');
+        if ($customer->getAdress() === null || $customer->getFirstName() === null || $customer->getLastName() === null || $customer->getEmail() === null) {
+            //dd('ce champ doit etre rempli');
+            return new Response('
+            Le formulaire doit être présenté comme suit:
+            {
+                "firstName":"",
+                "lastName":"",
+                "adress":"",
+                "email":""
+            }
+            ');
+        }
+
         $customer->setCreatedAt(new DateTime());
         $customer->setUuid(Uuid::v4());
         $customer->setReseller($this->getUser());
