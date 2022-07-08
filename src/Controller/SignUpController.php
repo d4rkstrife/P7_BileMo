@@ -24,7 +24,30 @@ class SignUpController extends AbstractController
     #[Route('/api/signup', name: 'app_sign_up', methods: ['POST'])]
     public function index(Request $request, SerializerInterface $serializer, ResellerRepository $resellerRepo, ValidatorInterface $validator): Response
     {
+        if (!$request->getContent()) {
+            return new Response('
+            Le formulaire doit être présenté comme suit toto:
+            {
+                    "email":"",
+                    "password":"",
+                    "company" : ""                
+                }
+            }
+            ', 400);
+        }
         $reseller = $serializer->deserialize($request->getContent(), Reseller::class, 'json');
+        if ($reseller->getEmail() === null || $reseller->getPassword() === null || $reseller->getCompany() === null) {
+            //dd('ce champ doit etre rempli');
+            return new Response('
+            Le formulaire doit être présenté comme suit:
+            {
+                "email":"",
+                "password":"",
+                "company" : ""  
+            }
+            ', 400);
+        }
+
         $reseller->setCreatedAt(new DateTime());
         $reseller->setUuid(Uuid::v4());
         $exceptions = $validator->validate($reseller);
@@ -34,8 +57,7 @@ class SignUpController extends AbstractController
             foreach ($exceptions as $violation) {
                 $violations[] = $violation->getMessage();
             }
-            //à faire
-            return $this->json($violations);
+            return $this->json($violations, 422);
         }
         $reseller->setPassword($this->userPasswordHasher->hashPassword($reseller, $reseller->getPassword()));
 
