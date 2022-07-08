@@ -82,6 +82,8 @@ class CustomerController extends AbstractController
     #[Route('/api/customers/{uuid}', name: 'customerModification', methods: ['PUT'])]
     public function customerModification(Customer $customer, EntityManagerInterface $entityManager, Request $request, SerializerInterface $serializer, ValidatorInterface $validator): Response
     {
+        //test
+        
         //dd($customer);
         if (!$request->getContent()) {
             return new Response('
