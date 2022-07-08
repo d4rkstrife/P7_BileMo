@@ -26,7 +26,7 @@ class SignUpController extends AbstractController
     {
         if (!$request->getContent()) {
             return new Response('
-            Le formulaire doit être présenté comme suit:
+            Le formulaire doit être présenté comme suit toto:
             {
                     "email":"",
                     "password":"",
@@ -57,7 +57,7 @@ class SignUpController extends AbstractController
             foreach ($exceptions as $violation) {
                 $violations[] = $violation->getMessage();
             }
-            return $this->json($violations);
+            return $this->json($violations, 422);
         }
         $reseller->setPassword($this->userPasswordHasher->hashPassword($reseller, $reseller->getPassword()));
 
