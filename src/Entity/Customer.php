@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
-#[UniqueEntity(fields: ['email'], message: 'mailUnique')]
+#[UniqueEntity(fields: ['email','reseller'], message: 'mailUnique')]
 class Customer
 {
     #[ORM\Id]
@@ -48,7 +48,7 @@ class Customer
     #[Groups('customer:read')]
     private $uuid;
 
-    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    #[ORM\Column(type: 'string', length: 255)]
     #[Groups('customer:read')]
     #[Assert\Email(message: 'mailNotValid')]
     #[NotBlank(message: 'mailNotNull')]
