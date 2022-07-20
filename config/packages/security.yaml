@@ -13,25 +13,17 @@ security:
                 class: App\Entity\Reseller
                 property: email
     firewalls:
+        
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-     #   login:
-     #       pattern: ^/api/login
-     #       stateless: true
-     #       json_login:
-     #           check_path: /api/login_check
-     #           success_handler: lexik_jwt_authentication.handler.authentication_success
-     #           failure_handler: lexik_jwt_authentication.handler.authentication_failure
-
-     #   api:
-     #       pattern:   ^/api
-     #       stateless: true
-     #       jwt: ~
-
+     
         api:
             pattern: ^/api
             stateless: true
+            login_throttling:
+                max_attempts: 3
+                interval: '5 minutes'
             entry_point: jwt
             json_login:
                 check_path: /api/login_check # or, if you have defined a route for your login path, the route name you used
@@ -40,6 +32,9 @@ security:
             jwt: ~
             refresh_jwt:
                 check_path: /api/token/refresh # or, you may use the `api_refresh_token` route name
+
+
+        
        #main:
           #  lazy: true
            # provider: app_user_provider

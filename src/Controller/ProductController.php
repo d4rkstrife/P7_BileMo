@@ -26,8 +26,9 @@ class ProductController extends AbstractController
     }
 
     #[Route('/api/products/{uuid}', name: 'product_details', methods: ['GET'])]
-    public function productDetails(Phone $phone): Response
+    public function productDetails(Uuid $uuid, PhoneRepository $phoneRepository): Response
     {
+        $phone = $phoneRepository->findOneBy(['uuid'=>$uuid]);
         return $this->json($phone, 201);
     }
 }

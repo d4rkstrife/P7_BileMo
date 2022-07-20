@@ -27,6 +27,7 @@ class CustomerController extends AbstractController
         return $this->json($paginator->getDatas(), 201, context: ['groups' => 'customer:read']);
     }
 
+
     #[Route('/api/customers', name: 'addCustomer', methods: ['POST'])]
     public function addOne(CustomerRepository $customerRepo, Request $request, SerializerInterface $serializer, ValidatorInterface $validator): Response
     {
@@ -73,18 +74,17 @@ class CustomerController extends AbstractController
     }
 
     #[Route('/api/customers/{uuid}', name: 'customer_details', methods: ['GET'])]
-    public function customerDetails(Uuid $uuid): Response
+    public function customerDetails(Uuid $uuid, CustomerRepository $customerRepo): Response
     {
-        dd($uuid);
+        
+        $customer = $customerRepo->findOneBy(['uuid'=>$uuid]);
         return $this->json($customer, 201, context: ['groups' => 'customer:read']);
     }
 
     #[Route('/api/customers/{uuid}', name: 'customerModification', methods: ['PUT'])]
     public function customerModification(Customer $customer, EntityManagerInterface $entityManager, Request $request, SerializerInterface $serializer, ValidatorInterface $validator): Response
     {
-        //test
         
-        //dd($customer);
         if (!$request->getContent()) {
             return new Response('
             Le formulaire doit être présenté comme suit:
@@ -111,5 +111,17 @@ class CustomerController extends AbstractController
         $entityManager->flush();
 
         return $this->json($customer, 200, context: ['groups' => 'customer:read']);
+    }
+
+    #[Route('/api/customers/{uuid}', name: 'customerDelete', methods: ['DELETE'])]
+    public function customerDelete(Uuid $uuid, CustomerRepository $customerRepository, EntityManagerInterface $em): Response
+    {
+        $customer = $customerRepository->findOneBy(['uuid'=> $uuid]);
+        $em->remove($customer);
+        $em->flush();
+        return new Response('
+        Suppression effectuée
+        ', 200);
+        
     }
 }

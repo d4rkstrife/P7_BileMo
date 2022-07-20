@@ -19,3 +19,6 @@
 .phpunit.result.cache
 ###< phpunit/phpunit ###
 
+###> jwt ###
+/config/jwt
+###< jwt ###
