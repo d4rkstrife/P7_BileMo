@@ -14,20 +14,8 @@ class UuidParamConverter implements ParamConverterInterface
     {
         //dd('tutu uuid');
         $param = $configuration->getName();
-
-        if (!$request->attributes->has($param)) {
-            return;
-        }
-
+        
         $value = $request->attributes->get($param);
-
-        if (!$value) {
-            if ($configuration->isOptional()) {
-                return null;
-            } else {
-                throw new NotFoundHttpException('The UUID not found in attributes of request.');
-            }
-        }
 
         $uuid = Uuid::fromString($value);
 
