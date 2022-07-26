@@ -29,6 +29,9 @@ class ProductController extends AbstractController
     public function productDetails(Uuid $uuid, PhoneRepository $phoneRepository): Response
     {
         $phone = $phoneRepository->findOneBy(['uuid'=>$uuid]);
-        return $this->json($phone, 201);
+        if(!$phone){
+            return $this->json(["Uuid"=>"Not found"], 404); 
+        }
+       return $this->json($phone, 201);
     }
 }

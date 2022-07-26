@@ -10,16 +10,22 @@ use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInte
 
 class UuidParamConverter implements ParamConverterInterface
 {
-    public function apply(Request $request, ParamConverter $configuration)
+    public function apply(Request $request, ParamConverter $configuration): bool
     {
-        //dd('tutu uuid');
         $param = $configuration->getName();
-        
+        if(!$request->attributes->has($param)){
+            return false;
+        }
         $value = $request->attributes->get($param);
+        if($value === '' && $configuration->isOptional()){
+            $request->attributes->set($param, null);
+            return true;
+        }
 
         $uuid = Uuid::fromString($value);
 
         $request->attributes->set($param, $uuid);
+        return true;
     }
 
     public function supports(ParamConverter $configuration)

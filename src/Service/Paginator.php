@@ -46,6 +46,11 @@ class Paginator
         $this->numberOfItems = $this->params->get($type);
         $repository = $this->entityManager->getRepository($repositoryName);
         $maxOfItems = $repository->count($criteria);
+        if($maxOfItems === 0){
+            $this->maxPage = 0;
+            $this->datas = null;
+            return;
+        }
         $this->maxPage = ceil($maxOfItems / $this->numberOfItems);
         $actualPage = $this->requestPage();
         $this->datas = $repository->findBy($criteria, $orderBy, $this->numberOfItems, $actualPage * $this->numberOfItems);
