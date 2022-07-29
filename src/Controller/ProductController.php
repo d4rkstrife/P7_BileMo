@@ -6,6 +6,7 @@ use App\Entity\Phone;
 use App\Service\Paginator;
 use Symfony\Component\Uid\Uuid;
 use App\Repository\PhoneRepository;
+use App\Serializer\PhoneNormalizer;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -26,8 +27,12 @@ class ProductController extends AbstractController
     }
 
     #[Route('/api/products/{uuid}', name: 'product_details', methods: ['GET'])]
-    public function productDetails(Phone $phone): Response
+    public function productDetails(Uuid $uuid, PhoneRepository $phoneRepository): Response
     {
-        return $this->json($phone, 201);
+        $phone = $phoneRepository->findOneBy(['uuid'=>$uuid]);
+        if(!$phone){
+            return $this->json(["Uuid"=>"Not found"], 404); 
+        }
+       return $this->json($phone, 201);
     }
 }
