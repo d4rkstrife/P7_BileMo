@@ -110,7 +110,7 @@ class CustomerController extends AbstractController
             ', 400);
         }
         $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $oldCustomer]);
-
+        
         $exceptions = $validator->validate($customer);
 
         if (count($exceptions) !== 0) {
@@ -136,7 +136,7 @@ class CustomerController extends AbstractController
         }
         $em->remove($customer);
         $em->flush();
-        return $this->json(["User"=>"Deleted"], 200);
+        return $this->json("", 204);
         
     }
 }

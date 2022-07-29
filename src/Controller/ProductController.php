@@ -6,6 +6,7 @@ use App\Entity\Phone;
 use App\Service\Paginator;
 use Symfony\Component\Uid\Uuid;
 use App\Repository\PhoneRepository;
+use App\Serializer\PhoneNormalizer;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
