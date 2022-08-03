@@ -20,5 +20,5 @@
 ###< phpunit/phpunit ###
 
 ###> jwt ###
-/config/jwt
+/config/jwt/
 ###< jwt ###
