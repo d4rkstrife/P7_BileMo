@@ -38,8 +38,6 @@ class CustomerNormalizer implements NormalizerInterface
         ], UrlGeneratorInterface::ABSOLUTE_URL);
         $data['_link']['delete']['action'] = "DELETE";
 
- //test 3
-        //dd($data);
         return $data;
     }
 
