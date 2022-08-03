@@ -21,8 +21,8 @@ class CustomerNormalizer implements NormalizerInterface
     public function normalize($customer, string $format = null, array $context = [])
     {
         $data = $this->normalizer->normalize($customer, $format, $context);
-        //dd($customer);
         // Here, add, edit, or delete some data: 
+        //dd($data);
          $data['_link']['self']['href'] = $this->router->generate('customer_details', [
             'uuid' => $customer->getUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);

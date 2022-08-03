@@ -75,7 +75,6 @@ class CustomerController extends AbstractController
 
         return $this->json($customer, 201, context: ['groups' => 'customer:read']);
     }
- //test
     #[Route('/api/customers/{uuid}', name: 'customer_details', methods: ['GET'])]
     public function customerDetails(Uuid $uuid, CustomerRepository $customerRepo): Response
     {   
