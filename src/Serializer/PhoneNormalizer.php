@@ -19,14 +19,21 @@ class PhoneNormalizer implements NormalizerInterface
     }
 
     public function normalize($phone, string $format = null, array $context = [])
-    {        
+    {
         $data = $this->normalizer->normalize($phone, $format, $context);
+        $datas = [];
         // Here, add, edit, or delete some data: 
-           $data['_link']['self'] = $this->router->generate('product_details', [
+        $datas['_link']['self'] = $this->router->generate('app_product_details', [
             'uuid' => $phone->getUuid(),
-        ], UrlGeneratorInterface::ABSOLUTE_URL);       
-           
-        return $data;
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
+        //dd($data);
+        $datas['name'] = $data['name'];
+        $datas['price'] = $data['price'];
+        $datas['brand'] = $data['brand'];
+        $datas['description'] = $data['description'];
+        $datas['uuid'] = $data['uuid'];
+        $datas['createdAt'] = $data['createdAt'];
+        return $datas;
     }
 
     public function supportsNormalization($data, string $format = null, array $context = [])
