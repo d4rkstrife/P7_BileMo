@@ -24,22 +24,29 @@ class CustomerNormalizer implements NormalizerInterface
         // Here, add, edit, or delete some data: 
         //dd($data);
         //dd($context);
-
-        $data['_link']['self'] = $this->router->generate('customer_details', [
+        $datas = [];
+        $datas['_link']['self'] = $this->router->generate('app_customers_details', [
             'uuid' => $customer->getUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $data['_link']['create'] = $this->router->generate('addCustomer', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        $datas['_link']['create'] = $this->router->generate('app_customers_create', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $data['_link']['modify'] = $this->router->generate('customerModification', [
+        $datas['_link']['modify'] = $this->router->generate('app_customers_modifiate', [
             'uuid' => $customer->getUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
-       
-        $data['_link']['delete'] = $this->router->generate('customerDelete', [
-            'uuid' => $customer->getUuid(),
-        ], UrlGeneratorInterface::ABSOLUTE_URL);   
 
-        return $data;
+        $datas['_link']['delete'] = $this->router->generate('app_customers_delete', [
+            'uuid' => $customer->getUuid(),
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
+        $datas['firstName'] = $data['firstName'];
+        $datas['lastName'] = $data['lastName'];
+        $datas['adress'] = $data['adress'];
+        $datas['reseller'] = $data['reseller'];
+        $datas['uuid'] = $data['uuid'];
+        $datas['email'] = $data['email'];
+        $datas['createdAt'] = $data['createdAt'];
+
+        return $datas;
     }
 
     public function supportsNormalization($data, string $format = null, array $context = [])
