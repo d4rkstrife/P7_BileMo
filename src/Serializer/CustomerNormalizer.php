@@ -23,20 +23,21 @@ class CustomerNormalizer implements NormalizerInterface
         $data = $this->normalizer->normalize($customer, $format, $context);
         // Here, add, edit, or delete some data: 
         //dd($data);
-         $data['_link']['self']['href'] = $this->router->generate('customer_details', [
-            'uuid' => $customer->getUuid(),
-        ], UrlGeneratorInterface::ABSOLUTE_URL);
-        $data['_link']['self']['action'] = "GET";
+        //dd($context);
 
-        $data['_link']['modify']['href'] = $this->router->generate('customerModification', [
+        $data['_link']['self'] = $this->router->generate('customer_details', [
             'uuid' => $customer->getUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
-        $data['_link']['modify']['action'] = "PUT";
+
+        $data['_link']['create'] = $this->router->generate('addCustomer', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $data['_link']['modify'] = $this->router->generate('customerModification', [
+            'uuid' => $customer->getUuid(),
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
        
-        $data['_link']['delete']['href'] = $this->router->generate('customerDelete', [
+        $data['_link']['delete'] = $this->router->generate('customerDelete', [
             'uuid' => $customer->getUuid(),
-        ], UrlGeneratorInterface::ABSOLUTE_URL);
-        $data['_link']['delete']['action'] = "DELETE";
+        ], UrlGeneratorInterface::ABSOLUTE_URL);   
 
         return $data;
     }

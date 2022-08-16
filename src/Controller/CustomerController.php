@@ -19,7 +19,7 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class CustomerController extends AbstractController
 {
-    #[Route('/api/customers/', name: 'customers', methods: ['GET'])]
+    #[Route('/api/customers/', name: 'app_customers', methods: ['GET'])]
     public function readAll(Paginator $paginator): Response
     {
         $user = $this->getUser();
@@ -27,7 +27,13 @@ class CustomerController extends AbstractController
         if($paginator->getDatas() === null){
             return $this->json('Aucun client trouvé', 404);
         }
-        return $this->json($paginator->getDatas(), 200, context: ['groups' => 'customer:read']);
+        //return $this->json($paginator, 200, context: ['groups' => 'customer:read']);
+        return $this->json($paginator, 200, context: [
+            'callbacks'=>['reseller'=> function ($reseller){
+                return $reseller->getCompany();
+            }],
+            ['route' => 'app_customers']
+        ]);
     }
 
 
@@ -84,7 +90,7 @@ class CustomerController extends AbstractController
             //doit retouner json
             return $this->json(["Uuid"=>"Not found"], 404);
         }
-        return $this->json($customer, 201, context: ['groups' => 'customer:read']);
+        return $this->json($customer, 200, context: ['groups' => 'customer:read', 'type' => 'details']);
     }
 
     #[Route('/api/customers/{uuid}', name: 'customerModification', methods: ['PUT'])]
