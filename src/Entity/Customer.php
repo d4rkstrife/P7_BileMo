@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
-#[UniqueEntity(fields: ['email','reseller'], message: 'mailUnique')]
+#[UniqueEntity(fields: ['email', 'reseller'], message: 'mailUnique')]
 class Customer
 {
     #[ORM\Id]
@@ -24,7 +24,7 @@ class Customer
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('customer:read')]
     #[Assert\Regex('^[a-zA-Zéèàêùï-]{1,}+$^', message: 'firstNameIncorrect')]
-    #[Assert\Length(max:5, maxMessage: 'firstNameTooLong')]
+    #[Assert\Length(max: 255, maxMessage: 'firstNameTooLong')]
     #[NotBlank(message: 'firstNameNotNull')]
     #[NotNull(message: 'firstNameNotNull')]
     private $firstName;
@@ -32,7 +32,7 @@ class Customer
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups('customer:read')]
     #[Assert\Regex('^[a-zA-Zéèàêùï-]{1,}+$^', message: 'lastNameIncorrect')]
-    #[Assert\Length(max:255)]
+    #[Assert\Length(max: 255)]
     #[NotBlank(message: 'lastNameNotNull')]
     #[NotNull(message: 'lastNameNotNull')]
     private $lastName;

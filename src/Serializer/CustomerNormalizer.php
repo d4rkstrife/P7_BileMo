@@ -25,17 +25,17 @@ class CustomerNormalizer implements NormalizerInterface
         //dd($data);
         //dd($context);
         $datas = [];
-        $datas['_link']['self'] = $this->router->generate('app_customers_details', [
+        $datas['_link']['self'] = $this->router->generate('app_customer_details', [
             'uuid' => $customer->getUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $datas['_link']['create'] = $this->router->generate('app_customers_create', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        $datas['_link']['create'] = $this->router->generate('app_customer_create', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $datas['_link']['modify'] = $this->router->generate('app_customers_modifiate', [
+        $datas['_link']['modify'] = $this->router->generate('app_customer_modifiate', [
             'uuid' => $customer->getUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $datas['_link']['delete'] = $this->router->generate('app_customers_delete', [
+        $datas['_link']['delete'] = $this->router->generate('app_customer_delete', [
             'uuid' => $customer->getUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
         $datas['firstName'] = $data['firstName'];
