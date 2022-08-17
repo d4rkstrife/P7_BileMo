@@ -19,7 +19,7 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class CustomerController extends AbstractController
 {
-    #[Route('/api/customers/', name: 'app_customers', methods: ['GET'])]
+    #[Route('/api/customers/', name: 'app_customer', methods: ['GET'])]
     public function readAll(Paginator $paginator): Response
     {
         $user = $this->getUser();
@@ -32,12 +32,12 @@ class CustomerController extends AbstractController
             'callbacks' => ['reseller' => function ($reseller) {
                 return $reseller->getCompany();
             }],
-            'route' => 'app_customers'
+            'route' => 'app_customer'
         ]);
     }
 
 
-    #[Route('/api/customers', name: 'app_customers_create', methods: ['POST'])]
+    #[Route('/api/customers', name: 'app_customer_create', methods: ['POST'])]
     public function addOne(CustomerRepository $customerRepo, Request $request, SerializerInterface $serializer, ValidatorInterface $validator): Response
     {
         if (!$request->getContent()) {
@@ -81,7 +81,7 @@ class CustomerController extends AbstractController
 
         return $this->json($customer, 201, context: ['groups' => 'customer:read']);
     }
-    #[Route('/api/customers/{uuid}', name: 'app_customers_details', methods: ['GET'])]
+    #[Route('/api/customers/{uuid}', name: 'app_customer_details', methods: ['GET'])]
     public function customerDetails(Uuid $uuid, CustomerRepository $customerRepo): Response
     {
         //vérification utilisateur (uuid, 404 not found)     
@@ -93,7 +93,7 @@ class CustomerController extends AbstractController
         return $this->json($customer, 200, context: ['groups' => 'customer:read', 'type' => 'details']);
     }
 
-    #[Route('/api/customers/{uuid}', name: 'app_customers_modifiate', methods: ['PUT'])]
+    #[Route('/api/customers/{uuid}', name: 'app_customer_modifiate', methods: ['PUT'])]
     public function customerModification(Uuid $uuid, CustomerRepository $customerRepo, EntityManagerInterface $entityManager, Request $request, SerializerInterface $serializer, ValidatorInterface $validator): Response
     {
         $oldCustomer = $customerRepo->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
@@ -131,7 +131,7 @@ class CustomerController extends AbstractController
         return $this->json($customer, 200, context: ['groups' => 'customer:read']);
     }
 
-    #[Route('/api/customers/{uuid}', name: 'app_customers_delete', methods: ['DELETE'])]
+    #[Route('/api/customers/{uuid}', name: 'app_customer_delete', methods: ['DELETE'])]
     public function customerDelete(Uuid $uuid, CustomerRepository $customerRepository, EntityManagerInterface $em): Response
     {
         $customer = $customerRepository->findOneBy(['uuid' => $uuid,  'reseller' => $this->getUser()]);
