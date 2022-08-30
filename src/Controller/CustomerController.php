@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class CustomerController extends AbstractController
+//last version
 {
     #[Route('/api/customers/', name: 'app_customer', methods: ['GET'])]
     public function readAll(Paginator $paginator): Response
