@@ -26,7 +26,7 @@ class CustomerController extends AbstractController
         $user = $this->getUser();
         $paginator->createPagination(Customer::class, ['reseller' => $user], ['createdAt' => "desc"], 'app.customerperpage');
         if ($paginator->getDatas() === null) {
-            return $this->json('Aucun client trouvé', 404);
+            return $this->json(['error'=>'Aucun client trouvé'], 404);
         }
         //return $this->json($paginator, 200, context: ['groups' => 'customer:read']);
         return $this->json($paginator, 200, context: [
@@ -89,7 +89,7 @@ class CustomerController extends AbstractController
         $customer = $customerRepo->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
         if (!$customer) {
             //doit retouner json
-            return $this->json(["Uuid" => "Not found"], 404);
+            return $this->json(["error" => "Not found"], 404);
         }
         return $this->json($customer, 200, context: ['groups' => 'customer:read', 'type' => 'details']);
     }
@@ -101,7 +101,7 @@ class CustomerController extends AbstractController
 
         if (!$oldCustomer) {
             //doit retouner json
-            return $this->json(["Uuid" => "Not found"], 404);
+            return $this->json(["error" => "Not found"], 404);
         }
 
         if (!$request->getContent()) {
@@ -138,7 +138,7 @@ class CustomerController extends AbstractController
         $customer = $customerRepository->findOneBy(['uuid' => $uuid,  'reseller' => $this->getUser()]);
         if (!$customer) {
             //doit retouner json
-            return $this->json(["Uuid" => "Not found"], 404);
+            return $this->json(["error" => "Not found"], 404);
         }
         $em->remove($customer);
         $em->flush();
