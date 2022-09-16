@@ -7,35 +7,48 @@ use App\Service\Paginator;
 use Symfony\Component\Uid\Uuid;
 use App\Repository\PhoneRepository;
 use App\Serializer\PhoneNormalizer;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class ProductController extends AbstractController
 {
-    /* public function __construct(PhoneRepository $phoneRepo, PhoneNormalizer $phoneNormalizer)
+    public function __construct(private CacheInterface $cache, private PhoneRepository $phoneRepository, TagAwareCacheInterface $myCachePool)
     {
-        $this->phoneRepo = $phoneRepo;
-        $this->phoneNormalizer = $phoneNormalizer;
-    }*/
+        $this->myCachePool = $myCachePool;
+        $this->cache = $cache;
+    }
 
     #[Route('api/products', name: 'app_product', methods: ['GET'])]
     public function allProducts(Paginator $paginator): Response
     {
         $paginator->createPagination(Phone::class, [], ['createdAt' => "desc"], 'app.phoneperpage');
-        //return $this->json($paginator->getDatas(), 200);
-        return $this->json($paginator, 200, context: ['route' => 'app_product']);
+        return $this->cache->get('products' . $paginator->getRequestPage(), function (ItemInterface $item) use ($paginator) {
+            $item->expiresAfter(3600);
+            // $paginator->createPagination(Phone::class, [], ['createdAt' => "desc"], 'app.phoneperpage');
+            return $this->json($paginator, 200, context: ['route' => 'app_product']);
+        });
+        /*$paginator->createPagination(Phone::class, [], ['createdAt' => "desc"], 'app.phoneperpage');
+        return $this->json($paginator, 200, context: ['route' => 'app_product']);*/
     }
 
     #[Route('/api/products/{uuid}', name: 'app_product_details', methods: ['GET'])]
-    public function productDetails(Uuid $uuid, PhoneRepository $phoneRepository): Response
+    public function productDetails(Uuid $uuid): Response
     {
-        $phone = $phoneRepository->findOneBy(['uuid' => $uuid]);
+        
+        return $this->cache->get($uuid, function (ItemInterface $item) use ($uuid) {
+            $item->expiresAfter(3600);
+            $phone = $this->phoneRepository->findOneBy(['uuid' => $uuid]);
 
-        if (!$phone) {
-            return $this->json(["Uuid" => "Not found"], 404);
-        }
-        return $this->json($phone, 200);
+            if (!$phone) {
+                return $this->json(["Uuid" => "Not found"], 404);
+            }
+            return $this->json($phone, 200);
+        });
     }
 }

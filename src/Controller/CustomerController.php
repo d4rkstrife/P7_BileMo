@@ -4,42 +4,57 @@ namespace App\Controller;
 
 use DateTime;
 use App\Entity\Customer;
+use App\Entity\Reseller;
 use App\Service\Paginator;
 use Symfony\Component\Uid\Uuid;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class CustomerController extends AbstractController
 //last version
 {
+    public function __construct(private CacheInterface $cache, private CustomerRepository $customerRepository, TagAwareCacheInterface $myCachePool)
+    {
+        $this->myCachePool = $myCachePool;
+        $this->cache = $cache;
+    }
+
     #[Route('/api/customers/', name: 'app_customer', methods: ['GET'])]
     public function readAll(Paginator $paginator): Response
     {
         $user = $this->getUser();
+
         $paginator->createPagination(Customer::class, ['reseller' => $user], ['createdAt' => "desc"], 'app.customerperpage');
-        if ($paginator->getDatas() === null) {
-            return $this->json(['error'=>'Aucun client trouvé'], 404);
-        }
-        //return $this->json($paginator, 200, context: ['groups' => 'customer:read']);
-        return $this->json($paginator, 200, context: [
-            'callbacks' => ['reseller' => function ($reseller) {
-                return $reseller->getCompany();
-            }],
-            'route' => 'app_customer'
-        ]);
+        return $this->myCachePool->get('products' . $user->getCompany() . $paginator->getRequestPage(), function (ItemInterface $item) use ($user, $paginator) {
+            $item->expiresAfter(3600);
+            $item->tag($user->getCompany().'_items');
+            if ($paginator->getDatas() === null) {
+                return $this->json(['error' => 'Aucun client trouvé'], 404);
+            }
+
+            return $this->json($paginator, 200, context: [
+                'callbacks' => ['reseller' => function ($reseller) {
+                    return $reseller->getCompany();
+                }],
+                'route' => 'app_customer'
+            ]);
+        });
     }
 
 
     #[Route('/api/customers', name: 'app_customer_create', methods: ['POST'])]
-    public function addOne(CustomerRepository $customerRepo, Request $request, SerializerInterface $serializer, ValidatorInterface $validator): Response
+    public function addOne(Request $request, SerializerInterface $serializer, ValidatorInterface $validator): Response
     {
         if (!$request->getContent()) {
             return new Response('
@@ -78,26 +93,29 @@ class CustomerController extends AbstractController
             }
             return $this->json($violations, 422);
         }
-        $customerRepo->add($customer);
+        $this->customerRepository->add($customer);
 
         return $this->json($customer, 201, context: ['groups' => 'customer:read']);
     }
+
     #[Route('/api/customers/{uuid}', name: 'app_customer_details', methods: ['GET'])]
-    public function customerDetails(Uuid $uuid, CustomerRepository $customerRepo): Response
+    public function customerDetails(Uuid $uuid): Response
     {
-        //vérification utilisateur (uuid, 404 not found)     
-        $customer = $customerRepo->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
-        if (!$customer) {
-            //doit retouner json
-            return $this->json(["error" => "Not found"], 404);
-        }
-        return $this->json($customer, 200, context: ['groups' => 'customer:read', 'type' => 'details']);
+        
+        return $this->cache->get('customer' . $this->getUser()->getCompany() . $uuid, function (ItemInterface $item) use ($uuid) {
+            $item->expiresAfter(3600);
+            $customer = $this->customerRepository->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
+            if (!$customer) {
+                return $this->json(["error" => "Not found"], 404);
+            }
+            return $this->json($customer, 200, context: ['groups' => 'customer:read', 'type' => 'details']);
+        });
     }
 
     #[Route('/api/customers/{uuid}', name: 'app_customer_modifiate', methods: ['PUT'])]
-    public function customerModification(Uuid $uuid, CustomerRepository $customerRepo, EntityManagerInterface $entityManager, Request $request, SerializerInterface $serializer, ValidatorInterface $validator): Response
+    public function customerModification(Uuid $uuid, EntityManagerInterface $entityManager, Request $request, SerializerInterface $serializer, ValidatorInterface $validator): Response
     {
-        $oldCustomer = $customerRepo->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
+        $oldCustomer = $this->customerRepository->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
 
         if (!$oldCustomer) {
             //doit retouner json
@@ -128,14 +146,16 @@ class CustomerController extends AbstractController
         }
 
         $entityManager->flush();
+        $this->cache->delete('customer' . $this->getUser()->getCompany() . $uuid);
+        $this->cache->delete($this->getUser()->getCompany().'_items');
 
         return $this->json($customer, 200, context: ['groups' => 'customer:read']);
     }
 
     #[Route('/api/customers/{uuid}', name: 'app_customer_delete', methods: ['DELETE'])]
-    public function customerDelete(Uuid $uuid, CustomerRepository $customerRepository, EntityManagerInterface $em): Response
+    public function customerDelete(Uuid $uuid, EntityManagerInterface $em): Response
     {
-        $customer = $customerRepository->findOneBy(['uuid' => $uuid,  'reseller' => $this->getUser()]);
+        $customer = $this->customerRepository->findOneBy(['uuid' => $uuid,  'reseller' => $this->getUser()]);
         if (!$customer) {
             //doit retouner json
             return $this->json(["error" => "Not found"], 404);
