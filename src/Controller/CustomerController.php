@@ -24,21 +24,21 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class CustomerController extends AbstractController
 //last version
 {
-    public function __construct(private CacheInterface $cache, private CustomerRepository $customerRepository, TagAwareCacheInterface $myCachePool)
+
+    public function __construct(private CacheInterface $cache, private CustomerRepository $customerRepository, private TagAwareCacheInterface $myCachePool)
     {
-        $this->myCachePool = $myCachePool;
-        $this->cache = $cache;
     }
 
     #[Route('/api/customers/', name: 'app_customer', methods: ['GET'])]
-    public function readAll(Paginator $paginator): Response
+    public function readAll(Paginator $paginator, Request $request): Response
     {
         $user = $this->getUser();
 
-        $paginator->createPagination(Customer::class, ['reseller' => $user], ['createdAt' => "desc"], 'app.customerperpage');
-        return $this->myCachePool->get('products' . $user->getCompany() . $paginator->getRequestPage(), function (ItemInterface $item) use ($user, $paginator) {
+
+        return $this->myCachePool->get('products_' . $user->getUUid() . '_' . $request->get('page', 1), function (ItemInterface $item) use ($user, $paginator) {
+            $paginator->createPagination(Customer::class, ['reseller' => $user], ['createdAt' => "desc"], 'app.customerperpage');
             $item->expiresAfter(3600);
-            $item->tag($user->getCompany().'_items');
+            $item->tag($user->getUUid() . '_items');
             if ($paginator->getDatas() === null) {
                 return $this->json(['error' => 'Aucun client trouvé'], 404);
             }
@@ -94,15 +94,15 @@ class CustomerController extends AbstractController
             return $this->json($violations, 422);
         }
         $this->customerRepository->add($customer);
-
+        $this->myCachePool->invalidateTags([$this->getUser()->getUUid() . '_items']);
         return $this->json($customer, 201, context: ['groups' => 'customer:read']);
     }
 
     #[Route('/api/customers/{uuid}', name: 'app_customer_details', methods: ['GET'])]
     public function customerDetails(Uuid $uuid): Response
     {
-        
-        return $this->cache->get('customer' . $this->getUser()->getCompany() . $uuid, function (ItemInterface $item) use ($uuid) {
+
+        return $this->cache->get('customer_' . $this->getUser()->getUuid() . '_' . $uuid, function (ItemInterface $item) use ($uuid) {
             $item->expiresAfter(3600);
             $customer = $this->customerRepository->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
             if (!$customer) {
@@ -146,8 +146,8 @@ class CustomerController extends AbstractController
         }
 
         $entityManager->flush();
-        $this->cache->delete('customer' . $this->getUser()->getCompany() . $uuid);
-        $this->cache->delete($this->getUser()->getCompany().'_items');
+        $this->cache->delete('customer_' . $this->getUser()->getUuid() . '_' . $uuid);
+        $this->myCachePool->invalidateTags([$this->getUser()->getUUid() . '_items']);
 
         return $this->json($customer, 200, context: ['groups' => 'customer:read']);
     }
@@ -155,13 +155,14 @@ class CustomerController extends AbstractController
     #[Route('/api/customers/{uuid}', name: 'app_customer_delete', methods: ['DELETE'])]
     public function customerDelete(Uuid $uuid, EntityManagerInterface $em): Response
     {
-        $customer = $this->customerRepository->findOneBy(['uuid' => $uuid,  'reseller' => $this->getUser()]);
+        $customer = $this->customerRepository->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
         if (!$customer) {
-            //doit retouner json
             return $this->json(["error" => "Not found"], 404);
         }
         $em->remove($customer);
         $em->flush();
+        $this->cache->delete('customer_' . $this->getUser()->getUuid() . '_' . $uuid);
+        $this->myCachePool->invalidateTags([$this->getUser()->getUUid() . '_items']);
         return $this->json("", 204);
     }
 }

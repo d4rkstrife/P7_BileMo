@@ -9,32 +9,30 @@ use App\Repository\PhoneRepository;
 use App\Serializer\PhoneNormalizer;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class ProductController extends AbstractController
 {
-    public function __construct(private CacheInterface $cache, private PhoneRepository $phoneRepository, TagAwareCacheInterface $myCachePool)
+    public function __construct(private CacheInterface $cache, private PhoneRepository $phoneRepository)
     {
-        $this->myCachePool = $myCachePool;
-        $this->cache = $cache;
     }
 
     #[Route('api/products', name: 'app_product', methods: ['GET'])]
-    public function allProducts(Paginator $paginator): Response
+    public function allProducts(Paginator $paginator, Request $request): Response
     {
-        $paginator->createPagination(Phone::class, [], ['createdAt' => "desc"], 'app.phoneperpage');
-        return $this->cache->get('products' . $paginator->getRequestPage(), function (ItemInterface $item) use ($paginator) {
+        
+        return $this->cache->get('products' . $request->get('page', 1), function (ItemInterface $item) use ($paginator) {
             $item->expiresAfter(3600);
-            // $paginator->createPagination(Phone::class, [], ['createdAt' => "desc"], 'app.phoneperpage');
+            $paginator->createPagination(Phone::class, [], ['createdAt' => "desc"], 'app.phoneperpage');
             return $this->json($paginator, 200, context: ['route' => 'app_product']);
         });
-        /*$paginator->createPagination(Phone::class, [], ['createdAt' => "desc"], 'app.phoneperpage');
-        return $this->json($paginator, 200, context: ['route' => 'app_product']);*/
+        
     }
 
     #[Route('/api/products/{uuid}', name: 'app_product_details', methods: ['GET'])]
