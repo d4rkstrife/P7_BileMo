@@ -32,6 +32,8 @@ class CustomerController extends AbstractController
     #[Route('/api/customers/', name: 'app_customer', methods: ['GET'])]
     public function readAll(Paginator $paginator, Request $request): Response
     {
+
+        /** @var Reseller $user */
         $user = $this->getUser();
 
 
@@ -102,7 +104,7 @@ class CustomerController extends AbstractController
     public function customerDetails(Uuid $uuid): Response
     {
 
-        return $this->cache->get('customer_' . $this->getUser()->getUuid() . '_' . $uuid, function (ItemInterface $item) use ($uuid) {
+        return $this->cache->get('customer_'.$uuid .'_reseller_'. $this->getUser()->getUuid(), function (ItemInterface $item) use ($uuid) {
             $item->expiresAfter(3600);
             $customer = $this->customerRepository->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
             if (!$customer) {
@@ -146,7 +148,7 @@ class CustomerController extends AbstractController
         }
 
         $entityManager->flush();
-        $this->cache->delete('customer_' . $this->getUser()->getUuid() . '_' . $uuid);
+        $this->cache->delete('customer_'.$uuid .'_reseller_'. $this->getUser()->getUuid());
         $this->myCachePool->invalidateTags([$this->getUser()->getUUid() . '_items']);
 
         return $this->json($customer, 200, context: ['groups' => 'customer:read']);
@@ -161,7 +163,7 @@ class CustomerController extends AbstractController
         }
         $em->remove($customer);
         $em->flush();
-        $this->cache->delete('customer_' . $this->getUser()->getUuid() . '_' . $uuid);
+        $this->cache->delete('customer_'.$uuid .'_reseller_'. $this->getUser()->getUuid());
         $this->myCachePool->invalidateTags([$this->getUser()->getUUid() . '_items']);
         return $this->json("", 204);
     }

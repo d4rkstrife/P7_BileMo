@@ -26,27 +26,28 @@ class ProductController extends AbstractController
     #[Route('api/products', name: 'app_product', methods: ['GET'])]
     public function allProducts(Paginator $paginator, Request $request): Response
     {
-        
-        return $this->cache->get('products' . $request->get('page', 1), function (ItemInterface $item) use ($paginator) {
+        //dd($request->headers->get('version', 1.0));
+        $version = $request->headers->get('version', "1.0");
+        return $this->cache->get('products' . $request->get('page', 1), function (ItemInterface $item) use ($paginator, $version) {
             $item->expiresAfter(3600);
             $paginator->createPagination(Phone::class, [], ['createdAt' => "desc"], 'app.phoneperpage');
-            return $this->json($paginator, 200, context: ['route' => 'app_product']);
+            return $this->json($paginator, 200, context: ['route' => 'app_product', 'version' => $version]);
         });
         
     }
 
     #[Route('/api/products/{uuid}', name: 'app_product_details', methods: ['GET'])]
-    public function productDetails(Uuid $uuid): Response
+    public function productDetails(Uuid $uuid, Request $request): Response
     {
-        
-        return $this->cache->get($uuid, function (ItemInterface $item) use ($uuid) {
+        $version = $request->headers->get('version', "1.0");
+        return $this->cache->get($uuid, function (ItemInterface $item) use ($uuid, $version) {
             $item->expiresAfter(3600);
             $phone = $this->phoneRepository->findOneBy(['uuid' => $uuid]);
 
             if (!$phone) {
                 return $this->json(["Uuid" => "Not found"], 404);
             }
-            return $this->json($phone, 200);
+            return $this->json($phone, 200, context: ['version' => $version]);
         });
     }
 }
