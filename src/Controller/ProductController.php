@@ -30,7 +30,7 @@ class ProductController extends AbstractController
         $version = $request->headers->get('version', "1.2");
         return $this->cache->get('products' . $request->get('page', 1), function (ItemInterface $item) use ($paginator, $version) {
             $item->expiresAfter(3600);
-            $paginator->createPagination(Phone::class, [], ['createdAt' => "desc"], 'app.phoneperpage');
+            $paginator->createPagination(Phone::class, [], ['createdAt' => "desc"], 'app.phone_per_page');
             return $this->json($paginator, 200, context: ['route' => 'app_product', 'version' => $version]);
         });
         

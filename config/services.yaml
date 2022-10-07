@@ -4,8 +4,11 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    app.phoneperpage: 2
-    app.customerperpage: 2
+    app.phone_per_page: 2
+    app.customer_per_page: 2
+    app.previous_version:
+        "1.0" : App\Versioning\Version\ConverterV10
+        "1.1" : App\Versioning\Version\ConverterV11
 
 services:
     # default configuration for services in *this* file

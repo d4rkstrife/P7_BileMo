@@ -38,7 +38,7 @@ class CustomerController extends AbstractController
 
 
         return $this->myCachePool->get('products_' . $user->getUUid() . '_' . $request->get('page', 1), function (ItemInterface $item) use ($user, $paginator) {
-            $paginator->createPagination(Customer::class, ['reseller' => $user], ['createdAt' => "desc"], 'app.customerperpage');
+            $paginator->createPagination(Customer::class, ['reseller' => $user], ['createdAt' => "desc"], 'app.customer_per_page');
             $item->expiresAfter(3600);
             $item->tag($user->getUUid() . '_items');
             if ($paginator->getDatas() === null) {
