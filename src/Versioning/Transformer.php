@@ -16,14 +16,11 @@ class Transformer
     public function transform(array $datas): array
     {
         $version = $this->requestStack->getCurrentRequest()->headers->get('version', "1.2");
-    if(array_key_exists($version,$this->params->get("app.previous_version"))){
-        $versionTransformer = $this->params->get("app.previous_version")[$version];
-        $transformer = new $versionTransformer();
-        return $transformer->transform($datas);
-    }
-    return $datas;
-
-
-
+        if(array_key_exists($version,$this->params->get("app.previous_version"))){
+            $versionTransformer = $this->params->get("app.previous_version")[$version];
+            $transformer = new $versionTransformer();
+            return $transformer->transform($datas);
+        }
+        return $datas;
     }
 }

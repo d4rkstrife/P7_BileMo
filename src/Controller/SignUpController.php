@@ -22,10 +22,15 @@ class SignUpController extends AbstractController
     }
 
     #[Route('/api/signup', name: 'app_sign_up', methods: ['POST'])]
-    public function index(Request $request, SerializerInterface $serializer, ResellerRepository $resellerRepo, ValidatorInterface $validator): Response
-    {
+    public function index(
+        Request $request,
+        SerializerInterface $serializer,
+        ResellerRepository $resellerRepo,
+        ValidatorInterface $validator
+    ): Response {
         if (!$request->getContent()) {
-            return new Response('
+            return new Response(
+                '
             Le formulaire doit être présenté comme suit toto:
             {
                     "email":"",
@@ -33,19 +38,22 @@ class SignUpController extends AbstractController
                     "company" : ""                
                 }
             }
-            ', 400);
+            ', 400
+            );
         }
         $reseller = $serializer->deserialize($request->getContent(), Reseller::class, 'json');
         if ($reseller->getEmail() === null || $reseller->getPassword() === null || $reseller->getCompany() === null) {
             //dd('ce champ doit etre rempli');
-            return new Response('
+            return new Response(
+                '
             Le formulaire doit être présenté comme suit:
             {
                 "email":"",
                 "password":"",
                 "company" : ""  
             }
-            ', 400);
+            ', 400
+            );
         }
 
         $reseller->setCreatedAt(new DateTime());

@@ -26,21 +26,22 @@ class ProductController extends AbstractController
     #[Route('api/products', name: 'app_product', methods: ['GET'])]
     public function allProducts(Paginator $paginator, Request $request): Response
     {
-        //dd($request->headers->get('version', 1.0));
         $version = $request->headers->get('version', "1.2");
-        return $this->cache->get('products' . $request->get('page', 1), function (ItemInterface $item) use ($paginator, $version) {
-            $item->expiresAfter(3600);
-            $paginator->createPagination(Phone::class, [], ['createdAt' => "desc"], 'app.phone_per_page');
-            return $this->json($paginator, 200, context: ['route' => 'app_product', 'version' => $version]);
-        });
-        
+        return $this->cache->get(
+            'products_page=' . $request->get('page', 1).' version='.$version,
+            function (ItemInterface $item) use ($paginator, $version) {
+                $item->expiresAfter(3600);
+                $paginator->createPagination(Phone::class, [], ['createdAt' => "desc"], 'app.phone_per_page');
+                return $this->json($paginator, 200, context: ['route' => 'app_product', 'version' => $version]);
+            }
+        );
     }
 
     #[Route('/api/products/{uuid}', name: 'app_product_details', methods: ['GET'])]
     public function productDetails(Uuid $uuid, Request $request): Response
     {
         $version = $request->headers->get('version', "1.2");
-        return $this->cache->get($uuid, function (ItemInterface $item) use ($uuid, $version) {
+        return $this->cache->get('product='.$uuid.' version='.$version, function (ItemInterface $item) use ($uuid, $version) {
             $item->expiresAfter(3600);
             $phone = $this->phoneRepository->findOneBy(['uuid' => $uuid]);
 
