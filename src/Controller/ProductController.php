@@ -70,7 +70,9 @@ class ProductController extends AbstractController
         )
     )]
     #[OA\Parameter(
-        name: 'page'
+        name: 'page',
+        in: 'query'
+
     )]
     #[OA\Tag(name: 'Product')]
     #[Route('api/products', name: 'app_product', methods: ['GET'])]

@@ -40,7 +40,8 @@ class CustomerController extends AbstractController
         'summary' => 'List all the customers for the connected reseller.'
     ])]
     #[OA\Parameter(
-        name: 'page'
+        name: 'page',
+        in: 'query'
     )]
     #[OA\Response(
         response: 200,
@@ -134,21 +135,21 @@ class CustomerController extends AbstractController
         description: "Return the new customer",
         content: new OA\JsonContent(
             example: [
-"_link"=> [
-"self"=> "http://localhost:3000/api/customers/dee93ecc-dfce-409d-8e73-7e7643e62c31",
-"create"=> "http://localhost:3000/api/customers",
-"modify"=> "http://localhost:3000/api/customers/dee93ecc-dfce-409d-8e73-7e7643e62c31",
-"delete"=> "http://localhost:3000/api/customers/dee93ecc-dfce-409d-8e73-7e7643e62c31"
-],
-"firstName"=> "firstName",
-    "lastName"=> "lastName",
-    "adress"=> "customer's adress",
-    "reseller"=> [
-    "company"=> "repellendus"
-    ],
-    "uuid"=> "dee93ecc-dfce-409d-8e73-7e7643e62c31",
-    "email"=> "customer@mail.com",
-    "createdAt"=> "2022-11-13T06:18:19+00:00"
+                "_link" => [
+                    "self" => "http://localhost:3000/api/customers/dee93ecc-dfce-409d-8e73-7e7643e62c31",
+                    "create" => "http://localhost:3000/api/customers",
+                    "modify" => "http://localhost:3000/api/customers/dee93ecc-dfce-409d-8e73-7e7643e62c31",
+                    "delete" => "http://localhost:3000/api/customers/dee93ecc-dfce-409d-8e73-7e7643e62c31"
+                ],
+                "firstName" => "firstName",
+                "lastName" => "lastName",
+                "adress" => "customer's adress",
+                "reseller" => [
+                    "company" => "repellendus"
+                ],
+                "uuid" => "dee93ecc-dfce-409d-8e73-7e7643e62c31",
+                "email" => "customer@mail.com",
+                "createdAt" => "2022-11-13T06:18:19+00:00"
             ]
         )
 
