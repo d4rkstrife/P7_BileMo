@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use DateTime;
 use App\Entity\Reseller;
+use Nelmio\ApiDocBundle\Annotation\Operation;
+use OpenApi\Attributes\Tag;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\DBAL\Types\ObjectType;
 use App\Repository\ResellerRepository;
@@ -14,6 +16,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use OpenApi\Attributes as OA;
 
 class SignUpController extends AbstractController
 {
@@ -21,6 +24,45 @@ class SignUpController extends AbstractController
     {
     }
 
+    #[Operation("Reseller sign up")]
+    #[OA\Tag(name: "Reseller")]
+    #[OA\Response(
+        response: 201,
+        description: "Return the created reseller",
+        content: new OA\JsonContent(
+            example: [
+                "uuid" => "cd88bc0d-129e-46d9-ac7f-76f6925f3285",
+                "email" => "sdsf@mail.com",
+                "createdAt" => "2022-11-16T04:42:51+00:00"
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 400,
+        description: "Error in the form",
+        content: new OA\JsonContent(
+            example: [
+                "email" => "",
+                "password" => "",
+                "company" => ""
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 422,
+        description: "Error: Unprocessable Entity"
+
+    )]
+    #[OA\RequestBody(
+        description: "Form to sign up",
+        content: new OA\JsonContent(
+            example: [
+                "email" => "",
+                "password" => "",
+                "company" => ""
+            ]
+        )
+    )]
     #[Route('/api/signup', name: 'app_sign_up', methods: ['POST'])]
     public function index(
         Request $request,
