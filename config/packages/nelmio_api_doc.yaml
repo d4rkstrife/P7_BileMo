@@ -12,6 +12,94 @@ nelmio_api_doc:
                     bearerFormat: JWT
         security:
             - Bearer: [ ]
+        paths:
+          /api/login_check:
+            post:
+              summary: Log in the app
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - userName
+                      properties:
+                        username:
+                          type: string
+                        password:
+                          type: string
+              responses:
+                '200':
+                  description: successful log in
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          token:
+                            type: string
+                          refresh_token:
+                            type: string
+                '401':
+                  description: Invalid credentials
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          code:
+                            type: int
+                          message:
+                            type: string
+                      examples:
+                        invalid_credentials:
+                          summary: Invalid credentials
+                          value: { "code": 401, "message": "Invalid credentials" }
+
+          /api/token/refresh:
+            post:
+              summary: Get a new token by usage of the long living `refresh_token`.
+              description: THis endpoints takes a refresh token to generate a new `token` and return it with the still valid `refresh_token`.
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        refresh_token:
+                          type: string
+              responses:
+                '200':
+                  description: successful token refresh
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          token:
+                            type: string
+                          refresh_token:
+                            type: string
+                '401':
+                  description: invalid `refresh_token`
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          code:
+                            type: int
+                          message:
+                            type: string
+                      examples:
+                        invalid_refresh_token:
+                          summary: Invalid refresh token
+                          value: { "code": 401, "message": "JWT Refresh Token Not Found" }
+
+
+
     areas: # to filter documented areas
         path_patterns:
             - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
