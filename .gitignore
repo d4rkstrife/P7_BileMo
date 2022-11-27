@@ -22,3 +22,5 @@
 ###> jwt ###
 /config/jwt/
 ###< jwt ###
+
+.idea

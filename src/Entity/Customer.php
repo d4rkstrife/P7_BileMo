@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Attributes\SecureData;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CustomerRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -22,6 +23,7 @@ class Customer
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[SecureData]
     #[Groups('customer:read')]
     #[Assert\Regex('^[a-zA-Zéèàêùï-]{1,}+$^', message: 'firstNameIncorrect')]
     #[Assert\Length(max: 255, maxMessage: 'firstNameTooLong')]
@@ -30,6 +32,7 @@ class Customer
     private $firstName;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[SecureData]
     #[Groups('customer:read')]
     #[Assert\Regex('^[a-zA-Zéèàêùï-]{1,}+$^', message: 'lastNameIncorrect')]
     #[Assert\Length(max: 255)]

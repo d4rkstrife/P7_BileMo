@@ -29,7 +29,11 @@ class CustomerNormalizer implements NormalizerInterface
             'uuid' => $customer->getUuid(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $datas['_link']['create'] = $this->router->generate('app_customer_create', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        $datas['_link']['create'] = $this->router->generate(
+            'app_customer_create',
+            [],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
 
         $datas['_link']['modify'] = $this->router->generate('app_customer_modifiate', [
             'uuid' => $customer->getUuid(),

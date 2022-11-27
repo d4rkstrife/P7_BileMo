@@ -20,11 +20,11 @@ class Phone
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
     //[Groups('product:read')]
-    private $name;
+    private ?string $name;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: 'string')]
     //[Groups('product:read')]
-    private $price;
+    private ?string $price;
 
     #[ORM\Column(type: 'string', length: 255)]
     //[Groups('product:read')]
@@ -63,12 +63,12 @@ class Phone
         return $this;
     }
 
-    public function getPrice(): ?int
+    public function getPrice(): ?string
     {
         return $this->price;
     }
 
-    public function setPrice(int $price): self
+    public function setPrice(string $price): self
     {
         $this->price = $price;
 

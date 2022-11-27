@@ -41,7 +41,7 @@ final class PhoneFactory extends ModelFactory
         return [
             // TODO add your default values here (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories)
             'name' => self::faker()->unique()->word(),
-            'price' => self::faker()->numberBetween($min = 900, $max = 1020),
+            'price' => strval(self::faker()->numberBetween($min = 900, $max = 1020)),
             'brand' => self::faker()->word(),
             'description' => self::faker()->sentence($nbWords = 30, $variableNbWords = true),
             'uuid' => Uuid::v4(), // TODO add UUID ORM type manually

@@ -1,0 +1,111 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: BileMo
+            description: This is an awesome app!
+            version: 1.0.0
+        components:
+            securitySchemes:
+                Bearer:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
+        security:
+            - Bearer: [ ]
+        paths:
+          /api/login_check:
+            post:
+              summary: Log in the app
+              tags:
+                - Reseller
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required:
+                        - userName
+                      properties:
+                        username:
+                          type: string
+                        password:
+                          type: string
+              responses:
+                '200':
+                  description: successful log in
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          token:
+                            type: string
+                          refresh_token:
+                            type: string
+                '401':
+                  description: Invalid credentials
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          code:
+                            type: int
+                          message:
+                            type: string
+                      examples:
+                        invalid_credentials:
+                          summary: Invalid credentials
+                          value: { "code": 401, "message": "Invalid credentials" }
+              security: []
+
+          /api/token/refresh:
+            post:
+              summary: Get a new token by usage of the long living `refresh_token`.
+              description: THis endpoints takes a refresh token to generate a new `token` and return it with the still valid `refresh_token`.
+              tags:
+                - Reseller
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        refresh_token:
+                          type: string
+              responses:
+                '200':
+                  description: successful token refresh
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          token:
+                            type: string
+                          refresh_token:
+                            type: string
+                '401':
+                  description: invalid `refresh_token`
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          code:
+                            type: int
+                          message:
+                            type: string
+                      examples:
+                        invalid_refresh_token:
+                          summary: Invalid refresh token
+                          value: { "code": 401, "message": "JWT Refresh Token Not Found" }
+              security: []
+
+
+
+    areas: # to filter documented areas
+        path_patterns:
+            - ^/api(?!/doc$) # Accepts routes under /api except /api/doc

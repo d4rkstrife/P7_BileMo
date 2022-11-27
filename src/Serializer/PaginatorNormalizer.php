@@ -25,7 +25,7 @@ class PaginatorNormalizer implements NormalizerInterface
         $datasPaginator = [];
         $itemsDatas = [];
         $data = $this->normalizer->normalize($object, $format, $context);
-        $maxPage = $data['maxOfItems'] / $data['numberOfItems'];
+        $maxPage = ceil($data['maxOfItems'] / $data['numberOfItems']);
 
         $itemsDatas = $data['datas'];
         $datasPaginator['_pagination']['current_page_number'] = $data['requestPage'];
