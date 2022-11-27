@@ -91,6 +91,16 @@ class CustomerController extends AbstractController
         )
 
     )]
+    #[OA\Response(
+        response: 401,
+        description: "No JWT Token",
+        content: new OA\JsonContent(
+            example: [
+                "code" => 401,
+                "message" => "JWT Token not found"
+            ]
+        )
+    )]
     #[OA\Tag(name: 'Customers')]
     #[Route('/api/customers/', name: 'app_customer', methods: ['GET'])]
     public function readAll(Paginator $paginator, Request $request): Response
@@ -158,6 +168,20 @@ class CustomerController extends AbstractController
         response: 400,
         description: "Bad request"
     )]
+    #[OA\Response(
+        response: 401,
+        description: "No JWT Token",
+        content: new OA\JsonContent(
+            example: [
+                "code" => 401,
+                "message" => "JWT Token not found"
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 422,
+        description: "Unprocessable Entity"
+    )]
     #[OA\RequestBody(
         description: "Form to create a new customer",
         content: new OA\JsonContent(
@@ -174,32 +198,19 @@ class CustomerController extends AbstractController
     public function addOne(Request $request, SerializerInterface $serializer, ValidatorInterface $validator): Response
     {
         if (!$request->getContent()) {
-            return new Response(
-                '
-            Le formulaire doit être présenté comme suit:
-            {
-                "firstName":"",
-                "lastName":"",
-                "adress":"",
-                "email":""
-            }
-            ', 400
-            );
-        }
+
+            return $this->json([
+                "error" => "See the documentation for the form"
+            ], 400);
+        };
+
+
         $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json');
         if ($customer->getAdress() === null || $customer->getFirstName() === null || $customer->getLastName(
             ) === null || $customer->getEmail() === null) {
-            return new Response(
-                '
-            Le formulaire doit être présenté comme suit:
-            {
-                "firstName":"",
-                "lastName":"",
-                "adress":"",
-                "email":""
-            }
-            ', 400
-            );
+            return $this->json([
+                "error" => "See the documentation for the form"
+            ], 400);
         }
 
         $customer->setCreatedAt(new DateTime());
@@ -247,6 +258,26 @@ class CustomerController extends AbstractController
             ]
         )
 
+    )]
+    #[OA\Response(
+        response: 401,
+        description: "No JWT Token",
+        content: new OA\JsonContent(
+            example: [
+                "code" => 401,
+                "message" => "JWT Token not found"
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 404,
+        description: "Not found",
+        content: new OA\JsonContent(
+            example: [
+                "code" => 404,
+                "message" => "Not Found"
+            ]
+        )
     )]
     #[OA\Tag(name: 'Customers')]
     #[Route('/api/customers/{uuid}', name: 'app_customer_details', methods: ['GET'])]
@@ -305,6 +336,24 @@ class CustomerController extends AbstractController
         )
 
     )]
+    #[OA\Response(
+        response: 401,
+        description: "No JWT Token",
+        content: new OA\JsonContent(
+            example: [
+                "code" => 401,
+                "message" => "JWT Token not found"
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 404,
+        description: "Not found"
+    )]
+    #[OA\Response(
+        response: 422,
+        description: "Unprocessable Entity"
+    )]
     #[OA\Tag(name: 'Customers')]
     #[Route('/api/customers/{uuid}', name: 'app_customer_modifiate', methods: ['PUT'])]
     public function customerModification(
@@ -317,22 +366,12 @@ class CustomerController extends AbstractController
         $oldCustomer = $this->customerRepository->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
 
         if (!$oldCustomer) {
-            //doit retouner json
             return $this->json(["error" => "Not found"], 404);
         }
 
         if (!$request->getContent()) {
-            return new Response(
-                '
-            Le formulaire doit être présenté comme suit:
-            {
-                "firstName":"",
-                "lastName":"",
-                "adress":"",
-                "email":""
-            }
-            ', 400
-            );
+            return $this->json(["error"=>"See the documentation for the form"], 400);
+
         }
         $customer = $serializer->deserialize(
             $request->getContent(),
@@ -366,6 +405,20 @@ class CustomerController extends AbstractController
         response: 204,
         description: "Return delete confirmation message",
 
+    )]
+    #[OA\Response(
+        response: 401,
+        description: "No JWT Token",
+        content: new OA\JsonContent(
+            example: [
+                "code" => 401,
+                "message" => "JWT Token not found"
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 404,
+        description: "Not found"
     )]
     #[OA\Tag(name: 'Customers')]
     #[Route('/api/customers/{uuid}', name: 'app_customer_delete', methods: ['DELETE'])]

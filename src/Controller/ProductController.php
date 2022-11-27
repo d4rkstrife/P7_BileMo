@@ -30,7 +30,6 @@ class ProductController extends AbstractController
     #[Operation([
         'summary' => 'List all the products.'
     ])]
-    #[Security(name: 'Bearer')]
     #[OA\Response(
         response: 200,
         description: 'Returns all the products',
@@ -66,6 +65,16 @@ class ProductController extends AbstractController
                     ]
                 ]
 
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: "No JWT Token",
+        content: new OA\JsonContent(
+            example: [
+                "code" => 401,
+                "message" => "JWT Token not found"
             ]
         )
     )]
@@ -114,6 +123,16 @@ class ProductController extends AbstractController
     #[OA\Response(
         response: 404,
         description: "Not found"
+    )]
+    #[OA\Response(
+        response: 401,
+        description: "No JWT Token",
+        content: new OA\JsonContent(
+            example: [
+                "code" => 401,
+                "message" => "JWT Token not found"
+            ]
+        )
     )]
     #[OA\Tag(name: 'Product')]
     #[Route('/api/products/{uuid}', name: 'app_product_details', methods: ['GET'])]

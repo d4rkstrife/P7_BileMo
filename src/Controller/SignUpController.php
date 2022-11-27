@@ -5,6 +5,7 @@ namespace App\Controller;
 use DateTime;
 use App\Entity\Reseller;
 use Nelmio\ApiDocBundle\Annotation\Operation;
+use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Attributes\Tag;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\DBAL\Types\ObjectType;
@@ -24,7 +25,9 @@ class SignUpController extends AbstractController
     {
     }
 
-    #[Operation("Reseller sign up")]
+    #[Operation([
+        'summary' =>"Reseller sign up"
+    ])]
     #[OA\Tag(name: "Reseller")]
     #[OA\Response(
         response: 201,
@@ -64,6 +67,7 @@ class SignUpController extends AbstractController
         )
     )]
     #[Route('/api/signup', name: 'app_sign_up', methods: ['POST'])]
+    #[Security([])]
     public function index(
         Request $request,
         SerializerInterface $serializer,
@@ -71,31 +75,12 @@ class SignUpController extends AbstractController
         ValidatorInterface $validator
     ): Response {
         if (!$request->getContent()) {
-            return new Response(
-                '
-            Le formulaire doit être présenté comme suit toto:
-            {
-                    "email":"",
-                    "password":"",
-                    "company" : ""                
-                }
-            }
-            ', 400
-            );
+            return $this->json(["error"=>"See the documentation for the form"],400);
         }
         $reseller = $serializer->deserialize($request->getContent(), Reseller::class, 'json');
         if ($reseller->getEmail() === null || $reseller->getPassword() === null || $reseller->getCompany() === null) {
-            //dd('ce champ doit etre rempli');
-            return new Response(
-                '
-            Le formulaire doit être présenté comme suit:
-            {
-                "email":"",
-                "password":"",
-                "company" : ""  
-            }
-            ', 400
-            );
+            return $this->json(["error"=>"See the documentation for the form"],400);
+
         }
 
         $reseller->setCreatedAt(new DateTime());

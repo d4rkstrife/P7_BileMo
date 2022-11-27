@@ -16,6 +16,8 @@ nelmio_api_doc:
           /api/login_check:
             post:
               summary: Log in the app
+              tags:
+                - Reseller
               requestBody:
                 required: true
                 content:
@@ -56,11 +58,14 @@ nelmio_api_doc:
                         invalid_credentials:
                           summary: Invalid credentials
                           value: { "code": 401, "message": "Invalid credentials" }
+              security: []
 
           /api/token/refresh:
             post:
               summary: Get a new token by usage of the long living `refresh_token`.
               description: THis endpoints takes a refresh token to generate a new `token` and return it with the still valid `refresh_token`.
+              tags:
+                - Reseller
               requestBody:
                 required: true
                 content:
@@ -97,6 +102,7 @@ nelmio_api_doc:
                         invalid_refresh_token:
                           summary: Invalid refresh token
                           value: { "code": 401, "message": "JWT Refresh Token Not Found" }
+              security: []
 
 
 
