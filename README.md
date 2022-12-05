@@ -17,6 +17,7 @@ In .env file, modifiate
 
 - DATABASE_URL=mysql://db_user:db_password@127.0.0.1:3306/db_name?serverVersion=5.7
   with your own database informations.
+- JWT_PASSPHRASE= with your own secret pass phrase.
 
 
 Then you have to install all dependencies the app needed to run: 
@@ -28,14 +29,14 @@ Then you have to install all dependencies the app needed to run:
 
 - symfony console doctrine:database:create
 - symfony console doctrine:migrations:migrate
-  You can generate fake datas with fixtures Run:
+  You can generate fake datas with fixture, run:
 
 - symfony console doctrine:fixtures:load
   Then to launch the application, run
 
 - symfony server:start --port=3000
 
-Some fake resellers are created by the fixtures. You can use them or create a new user.
+Some fake resellers are created by the fixtures. You can use them or create a new user. The password is "Password1!"
 
 go to localhost:3000/api/doc to see the full documentation of the app.
 
