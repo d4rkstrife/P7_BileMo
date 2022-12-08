@@ -34,7 +34,7 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     private $roles = [];
 
     #[ORM\Column(type: 'string')]
-    #[Assert\Regex('^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$^', message: 'passwordIncorrect')]
+    #[Assert\Regex('^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$^', message: 'passwordIncorrect')]
     #[NotBlank(message: 'passwordNotNull')]
     #[NotNull(message: 'passwordNotNull')]
     private $password;
